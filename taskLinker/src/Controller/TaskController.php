@@ -1,0 +1,173 @@
+<?php
+
+namespace App\Controller;
+
+use App\Repository\TaskRepository;
+use App\Repository\StateRepository;
+use App\Repository\EmployeeAssignementRepository;
+use App\Service\UserService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/task')]
+final class TaskController extends AbstractController
+{
+    public function __construct(
+        private TaskRepository $taskRepository,
+        private StateRepository $stateRepository,
+        private EmployeeAssignementRepository $employeeAssignementRepository,
+        private EntityManagerInterface $entityManager,
+        private UserService $userService
+    ) {}
+
+    #[Route('/{id}/edit', name: 'app_task_edit_form', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function editForm(
+        int $id
+    ): Response {
+        $task = $this->taskRepository->find($id);
+
+        if (!$task) {
+            throw $this->createNotFoundException('Task not found');
+        }
+
+        $states = $this->stateRepository->findAll();
+        
+        // Fetch the single assignment for this task and extract the linked user
+        $assignment = $this->employeeAssignementRepository->findOneBy(['task' => $task]);
+        $user = $assignment ? $assignment->getEmployee() : null;
+
+        return $this->render('task/edit.html.twig', [
+            'task' => $task,
+            'states' => $states,
+            'user' => $user,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_task_edit', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function edit(
+        int $id,
+        Request $request
+    ): Response {
+        $task = $this->taskRepository->find($id);
+
+        if (!$task) {
+            throw $this->createNotFoundException('Task not found');
+        }
+
+        $task->setLabel($request->request->get('label') ?? $task->getLabel());
+        $task->setDescription($request->request->get('description') ?? $task->getDescription());
+
+        $deadlineStr = $request->request->get('dateDeadline');
+        if ($deadlineStr) {
+            try {
+                $task->setDateDeadline(new \DateTime($deadlineStr));
+            } catch (\Exception $e) {
+                // Keep existing deadline if invalid
+            }
+        }
+
+        $stateId = $request->request->get('state');
+        if ($stateId) {
+            $state = $this->stateRepository->find($stateId);
+            if ($state) {
+                $task->setState($state);
+            }
+        }
+
+        $assignmentId = $request->request->get('employeeAssignement');
+        if ($assignmentId) {
+            $assignment = $this->employeeAssignementRepository->find($assignmentId);
+            if ($assignment) {
+                $task->setEmployeeAssignement($assignment);
+            }
+        }
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Task updated successfully');
+        return $this->redirect("/task/$id/edit");
+    }
+
+    #[Route('/{id}/delete', name: 'app_task_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(
+        int $id
+    ): Response {
+        $task = $this->taskRepository->find($id);
+
+        if (!$task) {
+            throw $this->createNotFoundException('Task not found');
+        }
+
+        $this->entityManager->remove($task);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Task deleted successfully');
+        return $this->redirect('/main');
+    }
+
+    #[Route('/create', name: 'app_task_create_form', methods: ['GET'])]
+    public function showCreateForm(Request $request): Response
+    {
+        $stateId = $request->query->get('state');
+        $state = null;
+
+        if ($stateId) {
+            $state = $this->stateRepository->find($stateId);
+            if (!$state) {
+                throw $this->createNotFoundException('State not found');
+            }
+        }
+
+        $users = $this->userService->getUsers();
+
+        return $this->render('task/create.html.twig', [
+            'state' => $state,
+            'users' => $users,
+        ]);
+    }
+
+    #[Route('/create', name: 'app_task_create', methods: ['POST'])]
+    public function create(Request $request): Response
+    {
+        $stateId = $request->request->get('state');
+        $state = $this->stateRepository->find($stateId);
+
+        if (!$state) {
+            throw $this->createNotFoundException('State not found');
+        }
+
+        $task = new \App\Entity\Task();
+        $task->setLabel($request->request->get('label'));
+        $task->setDescription($request->request->get('description'));
+        
+        $deadlineString = $request->request->get('dateDeadline');
+        if ($deadlineString) {
+            $task->setDateDeadline(new \DateTime($deadlineString));
+        }
+
+        $task->setState($state);
+
+        // Handle optional employee assignment
+        $employeeId = $request->request->get('assignedUser');
+        if ($employeeId) {
+            $employee = $this->userService->getUserById((int)$employeeId);
+            if ($employee) {
+                $assignment = new \App\Entity\EmployeeAssignement();
+                $assignment->setEmployee($employee);
+                if ($state && method_exists($state, 'getProject')) {
+                    $assignment->setProject($state->getProject());
+                }
+                $assignment->addTask($task);
+                $this->entityManager->persist($assignment);
+            }
+        }
+
+        $this->entityManager->persist($task);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('app_main');
+    }
+}

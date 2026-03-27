@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\TypeContract;
 use App\Repository\EmployeeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +15,7 @@ class Employee
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(length: 255)]
     private ?string $firstName = null;
@@ -33,7 +34,7 @@ class Employee
 
     #[ORM\ManyToOne(inversedBy: 'employees')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?typeContract $typeContract = null;
+    private ?TypeContract $typeContract = null;
 
     /**
      * @var Collection<int, EmployeeAssignement>
@@ -111,12 +112,12 @@ class Employee
         return $this;
     }
 
-    public function getTypeContract(): ?typeContract
+    public function getTypeContract(): ?TypeContract
     {
         return $this->typeContract;
     }
 
-    public function setTypeContract(?typeContract $typeContract): static
+    public function setTypeContract(?TypeContract $typeContract): static
     {
         $this->typeContract = $typeContract;
 

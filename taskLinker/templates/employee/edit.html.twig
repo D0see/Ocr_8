@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block page_title %}Modifier un employé{% endblock %}
+
+{% block content %}
+    <h2>Modifier un employé</h2>
+
+    <form name="employe" method="post">
+        <div><label for="employe_nom" class="required">Nom</label><input type="text" id="employe_nom" name="lastName" required maxlength="255" value="{{ employee.lastName }}" /></div>
+        <div><label for="employe_prenom" class="required">Prenom</label><input type="text" id="employe_prenom" name="firstName" required maxlength="255" value="{{ employee.firstName }}" /></div>
+        <div><label for="employe_email" class="required">Email</label><input type="email" id="employe_email" name="mail" required value="{{ employee.mail }}" /></div>
+        <div class="form-flex">
+            <div><label for="employe_dateArrivee" class="required">Date d'entrée</label><input type="date" id="employe_dateArrivee" name="dateEntry" required value="{{ employee.dateEntry ? employee.dateEntry.format('Y-m-d') : '' }}" /></div>
+            <div><label for="employe_statut" class="required">Statut</label>
+                <select id="employe_statut" name="typeContract">
+                    <option value="">Sélectionnez</option>
+                    {% for contr in typeContracts %}
+                        <option value="{{ contr.id }}" {% if employee.typeContract and employee.typeContract.id == contr.id %}selected{% endif %}>{{ contr.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button class="button button-submit" type="submit">Enregistrer</button>
+    </form>
+
+    <form method="POST" action="{{ path('app_employee_delete', {'id': employee.id}) }}">
+        <button type="submit" class="delete-team">Supprimer</button>
+    </form>
+{% endblock %}

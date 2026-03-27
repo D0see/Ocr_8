@@ -13,7 +13,7 @@ class EmployeeAssignement
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\ManyToOne(inversedBy: 'employeeAssignements')]
     #[ORM\JoinColumn(nullable: false)]

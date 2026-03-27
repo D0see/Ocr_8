@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projets — TaskLinker{% endblock %}
+
+{% block page_title %}Projets{% endblock %}
+
+{% block content %}
+    <div id="projects-container">
+        {% for project in projects %}
+            <article class="card-project">
+                <a href="{{ path('app_project_show', { id: project.id }) }}">
+                    <h2>{{ project.label }}</h2>
+                </a>
+                <div class="card-project-icons">
+                    <a href="{{ path('app_project_edit_get', { id: project.id }) }}">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <a href="{{ path('app_project_delete', { id: project.id }) }}">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </div>
+            </article>
+        {% else %}
+            <p class="no-results">Aucun projet trouvé.</p>
+        {% endfor %}
+
+        <article class="card-project">
+            <a href="{{ path('app_project_create') }}">
+                <i class="fa-solid fa-circle-plus add-project-icon"></i>
+                <h2>Ajouter un projet</h2>
+            </a>
+        </article>
+    </div>
+{% endblock %}

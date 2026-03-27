@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block page_title %}Nouveau projet{% endblock %}
+
+{% block content %}
+    <h2>Nouveau projet</h2>
+
+    <form name="projet" method="post">
+        <div><label for="projet_nom" class="required">Titre du projet</label><input type="text" id="projet_nom" name="label" required maxlength="255" /></div>
+        <div>
+            <label for="projet_employes">Inviter des membres</label>
+            <select id="projet_employes" name="employees[]" multiple>
+                {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="button button-submit" type="submit">Continuer</button>
+    </form>
+{% endblock %}

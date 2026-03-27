@@ -2,15 +2,35 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}TaskLinker{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
-
-        {% block javascripts %}
-        {% endblock %}
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <div id="main-container">
+            <nav>
+                <div id="logo">
+                    <img src="{{ asset('img/logo.svg') }}" alt="Logo">
+                </div>
+                <ul id="main-menu">
+                    <li><a href="{{ path('app_project_list') }}"><i class="fa-solid fa-list-check"></i>Projets</a></li>
+                    <li><a href="{{ path('app_employee_list') }}"><i class="fa-regular fa-user"></i>Équipe</a></li>
+                </ul>
+            </nav>
+            <main>
+                <header>
+                    <div class="flex-header">
+                        <div id="title-page">
+                            <h1>{% block page_title %}TaskLinker{% endblock %}</h1>
+                        </div>
+                    </div>
+                </header>
+                <div id="content">
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+        </div>
     </body>
 </html>

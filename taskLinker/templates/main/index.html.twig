@@ -1,6 +1,95 @@
-<!DOCTYPE html>
-<html>
-    <body>
-        <h1>Hello world</h1>
-    </body>
-</html>
+{% extends 'base.html.twig' %}
+
+{% block page_title %}Home{% endblock %}
+
+{% block content %}
+    <div id="projects-container">
+     <h1>{{projects|json_encode(constant('JSON_PRETTY_PRINT'))}}</h1>
+        {% for project in projects %}
+            <div class="card-project">
+                <a href="/project/{{ project.id }}">
+                    <h2>{{ project.label }}</h2>
+                </a>
+                <div class="card-project-icons">
+                    <a href="{{ path('app_project_edit_get', {'id': project.id}) }}" title="Edit">
+                        <i class="fas fa-pen"></i>
+                    </a>
+                    <form method="POST" action="{{ path('app_project_delete', {'id': project.id}) }}">
+                        <button type="submit" class="delete-team">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+        
+        <div class="card-project">
+            <a href="{{ path('app_project_create') }}">
+                <div><i class="fas fa-plus add-project-icon"></i></div>
+                <h2>New Project</h2>
+            </a>
+        </div>
+    </div>
+
+    <h2>Tasks</h2>
+    <div id="tasks-container">
+        {% for state in states %}
+            <div class="task-column">
+                <h2>{{ state.label }}</h2>
+                {% for task in tasks %}
+                    {% if task.state.id == state.id %}
+                        <a href="{{ path('app_task_edit', {'id': task.id}) }}" class="task">
+                            <h3>{{ task.label }}</h3>
+                            <p>{{ task.description[:50] }}{% if task.description|length > 50 %}...{% endif %}</p>
+                            <div class="task-infos">
+                                {% if task.dateDeadline %}
+                                    <div class="task-deadline">
+                                        <i class="fas fa-calendar"></i>
+                                        {{ task.dateDeadline.format('d/m/Y') }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                <a href="{{ path('app_task_create_form', {'state': state.id}) }}" class="task-add"><i class="fas fa-plus"></i> Add task</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2>Team</h2>
+    <table id="team-container">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Email</th>
+                <th>Contract Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if employees is defined %}
+                {% for employee in employees %}
+                    <tr>
+                        <td>
+                            <div class="employee-infos">
+                                <div class="employee-avatar">{{ (employee.firstName|slice(0,1) ~ employee.lastName|slice(0,1))|upper }}</div>
+                                <div class="employee-coords">
+                                    <strong>{{ employee.firstName }} {{ employee.lastName }}</strong>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ employee.mail }}</td>
+                        <td>{{ employee.typeContract.label }}</td>
+                        <td>
+                            <a href="{{ path('app_employee_edit_get', {'id': employee.id}) }}" class="button button-edit-team">Edit</a>
+                            <form method="POST" action="{{ path('app_employee_delete', {'id': employee.id}) }}">
+                                <button type="submit" class="delete-team">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

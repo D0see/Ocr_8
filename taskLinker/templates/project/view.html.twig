@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block page_title %}Détails du projet{% endblock %}
+
+{% block content %}
+    <div class="flex-header">
+        <h2>{{ project.label }}</h2>
+        <div class="user-list">
+            {% for user in assignedUsers %}
+                <div class="avatar">{{ (user.firstName|slice(0,1) ~ user.lastName|slice(0,1))|upper }}</div>
+            {% endfor %}
+        </div>
+        <a href="{{ path('app_project_edit_get', {id: project.id}) }}" class="button">Modifier</a>
+    </div>
+
+    <h3>Équipe</h3>
+    {% if assignedUsers is empty %}
+        <p>Aucun membre assigné.</p>
+    {% else %}
+        <ul>
+            {% for user in assignedUsers %}
+                <li>{{ user.firstName }} {{ user.lastName }} ({{ user.mail }})</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h3>Tâches par statut</h3>
+    {% for stateLabel, tasks in tasksByState %}
+        <div class="task-column">
+            <h2>{{ stateLabel }}</h2>
+            {% if tasks is empty %}
+                <p>Aucune tâche dans ce statut.</p>
+            {% else %}
+                <div class="tasks-list">
+                    {% for task in tasks %}
+                        <a href="{{ path('app_task_edit_form', {id: task.id}) }}" class="task">
+                            <h3>{{ task.label }}</h3>
+                            <p>{{ task.description }}</p>
+                            <div class="task-infos">
+                                {% if task.dateDeadline %}
+                                    <div class="task-deadline"><i class="fas fa-calendar"></i> {{ task.dateDeadline.format('d/m/Y') }}</div>
+                                {% endif %}
+                                {% if task.employeeAssignement and task.employeeAssignement.employee %}
+                                    <div class="mini-user">{{ (task.employeeAssignement.employee.firstName|slice(0,1) ~ task.employeeAssignement.employee.lastName|slice(0,1))|upper }}</div>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                    <a href="{{ path('app_task_create_form', {state: project.states|first.id}) }}" class="task-add">+ Ajouter une tâche</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <a href="{{ path('app_main') }}" class="button">Retour au tableau de bord</a>
+{% endblock %}
