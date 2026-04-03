@@ -5,7 +5,7 @@
 {% block content %}
     <h2>Créer une tâche</h2>
 
-    <form name="tache" method="post">
+    <form name="tache" method="post" action="{{ path('app_task_create') }}">
         <div><label for="tache_titre" class="required">Titre de la tâche</label><input type="text" id="tache_titre" name="label" required /></div>
         <div><label for="tache_description">Description</label><textarea id="tache_description" name="description"></textarea></div>
 
@@ -13,18 +13,12 @@
             <div><label for="tache_deadline">Date</label><input type="date" id="tache_deadline" name="dateDeadline" /></div>
             <div>
                 <label for="tache_statut" class="required">Statut</label>
-                {% if state %}
-                    <input type="hidden" name="state" value="{{ state.id }}" />
-                    <p><strong>Project:</strong> {{ state.project.label }}</p>
-                    <p><strong>State:</strong> {{ state.label }}</p>
-                {% else %}
-                    <select id="tache_statut" name="state" required>
-                        <option value="">Sélectionnez</option>
-                        {% for s in states %}
-                            <option value="{{ s.id }}">{{ s.label }}</option>
-                        {% endfor %}
-                    </select>
-                {% endif %}
+                <select id="tache_statut" name="state" required>
+                    <option value="">Sélectionnez</option>
+                    {% for s in states %}
+                        <option value="{{ s.id }}">{{ s.label }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
 

@@ -28,7 +28,7 @@ class Task
     private ?State $state = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
-    private ?employeeAssignement $employeeAssignement = null;
+    private ?EmployeeAssignement $employeeAssignement = null;
 
     public function getId(): ?int
     {
@@ -83,12 +83,12 @@ class Task
         return $this;
     }
 
-    public function getEmployeeAssignement(): ?employeeAssignement
+    public function getEmployeeAssignement(): ?EmployeeAssignement
     {
         return $this->employeeAssignement;
     }
 
-    public function setEmployeeAssignement(?employeeAssignement $employeeAssignement): static
+    public function setEmployeeAssignement(?EmployeeAssignement $employeeAssignement): static
     {
         $this->employeeAssignement = $employeeAssignement;
 

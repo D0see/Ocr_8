@@ -1,8 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block page_title %}Détails du projet{% endblock %}
+{% block page_title %}
 
-{% block content %}
     <div class="flex-header">
         <h2>{{ project.label }}</h2>
         <div class="user-list">
@@ -13,24 +12,14 @@
         <a href="{{ path('app_project_edit_get', {id: project.id}) }}" class="button">Modifier</a>
     </div>
 
-    <h3>Équipe</h3>
-    {% if assignedUsers is empty %}
-        <p>Aucun membre assigné.</p>
-    {% else %}
-        <ul>
-            {% for user in assignedUsers %}
-                <li>{{ user.firstName }} {{ user.lastName }} ({{ user.mail }})</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+{% endblock %}
 
-    <h3>Tâches par statut</h3>
+{% block content %}
+
+    <div id="tasks-container">
     {% for stateLabel, tasks in tasksByState %}
         <div class="task-column">
             <h2>{{ stateLabel }}</h2>
-            {% if tasks is empty %}
-                <p>Aucune tâche dans ce statut.</p>
-            {% else %}
                 <div class="tasks-list">
                     {% for task in tasks %}
                         <a href="{{ path('app_task_edit_form', {id: task.id}) }}" class="task">
@@ -46,11 +35,9 @@
                             </div>
                         </a>
                     {% endfor %}
-                    <a href="{{ path('app_task_create_form', {state: project.states|first.id}) }}" class="task-add">+ Ajouter une tâche</a>
+                    <a href="{{ path('app_task_create_form', {idProject: project.id}) }}" class="task-add">+ Ajouter une tâche</a>
                 </div>
-            {% endif %}
         </div>
     {% endfor %}
-
-    <a href="{{ path('app_main') }}" class="button">Retour au tableau de bord</a>
+    <div id="tasks-container">
 {% endblock %}

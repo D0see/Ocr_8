@@ -36,13 +36,14 @@ final class TaskController extends AbstractController
         $states = $this->stateRepository->findAll();
         
         // Fetch the single assignment for this task and extract the linked user
-        $assignment = $this->employeeAssignementRepository->findOneBy(['task' => $task]);
+        $assignment = $task->getEmployeeAssignement();
         $user = $assignment ? $assignment->getEmployee() : null;
 
         return $this->render('task/edit.html.twig', [
             'task' => $task,
             'states' => $states,
             'user' => $user,
+            'users' => $this->userService->getUsers(),
         ]);
     }
 
@@ -101,30 +102,34 @@ final class TaskController extends AbstractController
             throw $this->createNotFoundException('Task not found');
         }
 
+        // Get the assignment before deleting the task
+        $assignment = $task->getEmployeeAssignement();
+
+        // Clear the reference to avoid FK constraint issues
+
         $this->entityManager->remove($task);
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Task deleted successfully');
-        return $this->redirect('/main');
+        return $this->redirect('/');
     }
 
-    #[Route('/create', name: 'app_task_create_form', methods: ['GET'])]
-    public function showCreateForm(Request $request): Response
-    {
-        $stateId = $request->query->get('state');
-        $state = null;
-
-        if ($stateId) {
-            $state = $this->stateRepository->find($stateId);
-            if (!$state) {
-                throw $this->createNotFoundException('State not found');
-            }
-        }
+    #[Route('/{idProject}/create', name: 'app_task_create_form', requirements: ['idProject' => '\d+'], methods: ['GET'])]
+    public function showCreateForm(
+        int $idProject,
+        Request $request
+    ): Response {
 
         $users = $this->userService->getUsers();
+        $states = $this->stateRepository->createQueryBuilder('s')
+            ->where('s.project = :projectId')
+            ->setParameter('projectId', $idProject)
+            ->getQuery()
+            ->getResult();
 
         return $this->render('task/create.html.twig', [
-            'state' => $state,
+            'idProject' => $idProject,
+            'states' => $states,
             'users' => $users,
         ]);
     }
