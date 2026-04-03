@@ -121,11 +121,7 @@ final class TaskController extends AbstractController
     ): Response {
 
         $users = $this->userService->getUsers();
-        $states = $this->stateRepository->createQueryBuilder('s')
-            ->where('s.project = :projectId')
-            ->setParameter('projectId', $idProject)
-            ->getQuery()
-            ->getResult();
+        $states = $this->stateRepository->findByProjectId($idProject);
 
         return $this->render('task/create.html.twig', [
             'idProject' => $idProject,

@@ -16,6 +16,18 @@ class StateRepository extends ServiceEntityRepository
         parent::__construct($registry, State::class);
     }
 
+    /**
+     * @return State[] Returns an array of State objects for a given project
+     */
+    public function findByProjectId(int $projectId): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.project = :projectId')
+            ->setParameter('projectId', $projectId)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return State[] Returns an array of State objects
     //     */
