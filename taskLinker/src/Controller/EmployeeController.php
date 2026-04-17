@@ -94,6 +94,6 @@ final class EmployeeController extends AbstractController
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Employee deleted successfully');
-        return $this->redirect('/main');
+        return $this->redirect('/');
     }
 }

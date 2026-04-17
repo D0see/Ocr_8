@@ -13,7 +13,6 @@
             <div><label for="employe_dateArrivee" class="required">Date d'entrée</label><input type="date" id="employe_dateArrivee" name="dateEntry" required value="{{ employee.dateEntry ? employee.dateEntry.format('Y-m-d') : '' }}" /></div>
             <div><label for="employe_statut" class="required">Statut</label>
                 <select id="employe_statut" name="typeContract">
-                    <option value="">Sélectionnez</option>
                     {% for contr in typeContracts %}
                         <option value="{{ contr.id }}" {% if employee.typeContract and employee.typeContract.id == contr.id %}selected{% endif %}>{{ contr.label }}</option>
                     {% endfor %}
@@ -24,6 +23,6 @@
     </form>
 
     <form method="POST" action="{{ path('app_employee_delete', {'id': employee.id}) }}">
-        <button type="submit" class="delete-team">Supprimer</button>
+        <button type="submit" class="delete-project">Supprimer</button>
     </form>
 {% endblock %}

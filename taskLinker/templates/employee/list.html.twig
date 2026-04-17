@@ -30,8 +30,10 @@
                     <td>{{ employee.typeContract.label }}</td>
                     <td>
                         <a class="button button-edit-team" href="{{ path('app_employee_edit_get', { id: employee.id }) }}">Éditer</a>
-                        <a class="delete-team" href="{{ path('app_employee_delete', { id: employee.id }) }}">Supprimer</a>
-                    </td>
+                        <form method="post" action="{{ path('app_employee_delete', { id: employee.id }) }}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="delete-team">Supprimer</button>
+                        </form>
                 </tr>
             {% else %}
                 <tr>

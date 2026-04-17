@@ -28,6 +28,7 @@ class Task
     private ?State $state = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?EmployeeAssignement $employeeAssignement = null;
 
     public function getId(): ?int

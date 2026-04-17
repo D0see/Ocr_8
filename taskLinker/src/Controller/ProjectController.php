@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Project;
 use App\Entity\EmployeeAssignement;
+use App\Entity\State;
 use App\Repository\ProjectRepository;
+use App\Repository\StateRepository;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +19,7 @@ final class ProjectController extends AbstractController
 {
     public function __construct(
         private ProjectRepository $projectRepository,
+        private StateRepository $stateRepository,
         private UserService $userService,
         private EntityManagerInterface $entityManager
     ) {}
@@ -40,6 +43,16 @@ final class ProjectController extends AbstractController
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 
+        // Create 3 default states for the project
+        $defaultStates = ['À faire', 'En cours', 'Fait'];
+        foreach ($defaultStates as $stateLabel) {
+            $state = new State();
+            $state->setLabel($stateLabel);
+            $state->setProject($project);
+            $this->entityManager->persist($state);
+        }
+        $this->entityManager->flush();
+
         // Handle employee assignments
         $employeeIds = $request->request->all('employees');
         if (!empty($employeeIds)) {
@@ -55,8 +68,10 @@ final class ProjectController extends AbstractController
             $this->entityManager->flush();
         }
 
+
+
         $this->addFlash('success', 'Project created successfully');
-        return $this->redirectToRoute('app_project_edit_form', ['id' => $project->getId()]);
+        return $this->redirectToRoute('app_project_edit_get', ['id' => $project->getId()]);
     }
 
     #[Route('/list', name: 'app_project_list', methods: ['GET'])]
@@ -168,7 +183,7 @@ final class ProjectController extends AbstractController
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Project updated successfully');
-        return $this->redirectToRoute('app_project_edit_form', ['id' => $id]);
+        return $this->redirectToRoute('app_project_edit_get', ['id' => $id]);
     }
 
     #[Route('/{id}/delete', name: 'app_project_delete', requirements: ['id' => '\d+'], methods: ['POST'])]

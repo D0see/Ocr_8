@@ -9,16 +9,14 @@
         <div><label for="tache_titre" class="required">Titre de la tâche</label><input type="text" id="tache_titre" name="label" required value="{{ task.label }}" /></div>
         <div><label for="tache_description">Description</label><textarea id="tache_description" name="description">{{ task.description }}</textarea></div>
 
-        <div class="form-flex">
-            <div><label for="tache_deadline">Date</label><input type="date" id="tache_deadline" name="dateDeadline" value="{{ task.dateDeadline ? task.dateDeadline.format('Y-m-d') : '' }}" /></div>
-            <div>
-                <label for="tache_statut" class="required">Statut</label>
-                <select id="tache_statut" name="state" required>
-                    {% for s in states %}
-                        <option value="{{ s.id }}" {% if task.state and task.state.id == s.id %}selected{% endif %}>{{ s.label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div><label for="tache_deadline">Date</label><input type="date" id="tache_deadline" name="dateDeadline" value="{{ task.dateDeadline ? task.dateDeadline.format('Y-m-d') : '' }}" /></div>
+        <div>
+            <label for="tache_statut" class="required">Statut</label>
+            <select id="tache_statut" name="state" required>
+                {% for s in states %}
+                    <option value="{{ s.id }}" {% if task.state and task.state.id == s.id %}selected{% endif %}>{{ s.label }}</option>
+                {% endfor %}
+            </select>
         </div>
 
         <div>

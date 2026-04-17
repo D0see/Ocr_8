@@ -1,5 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
 
+button.delete-team {
+    color: #E14343;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #E14343;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+}
+
+button.delete-task {
+    color: #E14343;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #E14343;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-left: 95px;
+}
+
+button.delete-project {
+    color: #E14343;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #E14343;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-left: 120px;
+}
+
 html, body {
     margin: 0;
     min-height: 100vh;

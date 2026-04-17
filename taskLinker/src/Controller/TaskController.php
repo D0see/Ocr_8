@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Task;
 use App\Repository\TaskRepository;
 use App\Repository\StateRepository;
 use App\Repository\EmployeeAssignementRepository;
@@ -27,13 +28,19 @@ final class TaskController extends AbstractController
     public function editForm(
         int $id
     ): Response {
+
+        /**
+         * @var Task $task
+         */
         $task = $this->taskRepository->find($id);
 
         if (!$task) {
             throw $this->createNotFoundException('Task not found');
         }
 
-        $states = $this->stateRepository->findAll();
+        $idProject = $task->getState()->getProject()->getId();
+
+        $states = $this->stateRepository->findByProjectId($idProject);
         
         // Fetch the single assignment for this task and extract the linked user
         $assignment = $task->getEmployeeAssignement();
@@ -78,13 +85,15 @@ final class TaskController extends AbstractController
             }
         }
 
-        $assignmentId = $request->request->get('employeeAssignement');
-        if ($assignmentId) {
-            $assignment = $this->employeeAssignementRepository->find($assignmentId);
-            if ($assignment) {
-                $task->setEmployeeAssignement($assignment);
-            }
-        }
+        $assignedUser = $request->request->get('assignedUser');
+
+        dump($assignedUser);
+        // if ($assignmentId) {
+        //     $assignment = $this->employeeAssignementRepository->find($assignmentId);
+        //     if ($assignment) {
+        //         $task->setEmployeeAssignement($assignment);
+        //     }
+        // }
 
         $this->entityManager->flush();
 
