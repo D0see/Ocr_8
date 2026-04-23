@@ -20,7 +20,7 @@ class EmployeeAssignement
     private ?Employee $employee = null;
 
     #[ORM\ManyToOne(inversedBy: 'employeeAssignements')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Project $project = null;
 
     /**

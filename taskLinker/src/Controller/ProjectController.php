@@ -19,7 +19,6 @@ final class ProjectController extends AbstractController
 {
     public function __construct(
         private ProjectRepository $projectRepository,
-        private StateRepository $stateRepository,
         private UserService $userService,
         private EntityManagerInterface $entityManager
     ) {}
@@ -43,7 +42,7 @@ final class ProjectController extends AbstractController
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 
-        // Create 3 default states for the project
+        // Creer 3 states en dur
         $defaultStates = ['À faire', 'En cours', 'Fait'];
         foreach ($defaultStates as $stateLabel) {
             $state = new State();
@@ -186,15 +185,21 @@ final class ProjectController extends AbstractController
         return $this->redirectToRoute('app_project_edit_get', ['id' => $id]);
     }
 
-    #[Route('/{id}/delete', name: 'app_project_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_project_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function delete(
-        int $id
+        int $id,
     ): Response {
-        $project = $this->projectRepository->find($id);
 
+        $project = $this->projectRepository->find($id);
+        if (!$project) {
+            throw $this->createNotFoundException('Project not found');
+        }
+
+        // Rely on DB-level ON DELETE CASCADE for related states, tasks and assignments
         $this->entityManager->remove($project);
         $this->entityManager->flush();
-        
+
+        $this->addFlash('success', 'Project deleted successfully');
         return $this->redirectToRoute('app_main');
     }
 }

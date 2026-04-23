@@ -4,13 +4,14 @@
 
 {% block content %}
     <h2>Modifier le projet</h2>
+    {# Select2 assets are included in base template; only initialize here #}
 
     <form name="projet" method="post">
         <div><label for="projet_nom" class="required">Titre du projet</label><input type="text" id="projet_nom" name="label" required value="{{ project.label }}" /></div>
         
         <div>
             <label>Assign Employees</label>
-            <select name="employees[]" multiple>
+            <select id="project_employees" name="employees[]" multiple style="width:100%;">
                 {% for user in users %}
                     <option value="{{ user.id }}" {% if user.id in assignedEmployeeIds %}selected{% endif %}>{{ user.firstName }} {{ user.lastName }}</option>
                 {% endfor %}
@@ -23,4 +24,6 @@
     <form method="POST" action="{{ path('app_project_delete', {'id': project.id}) }}">
         <button type="submit" class="delete-project">Supprimer</button>
     </form>
+
+    {# select.js in public/js will initialize all multiple selects like the prototype #}
 {% endblock %}

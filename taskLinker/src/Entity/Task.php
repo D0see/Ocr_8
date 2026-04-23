@@ -24,7 +24,7 @@ class Task
     private ?\DateTime $dateDeadline = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?State $state = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]

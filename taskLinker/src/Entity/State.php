@@ -20,7 +20,7 @@ class State
     private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'states')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Project $project = null;
 
     /**
