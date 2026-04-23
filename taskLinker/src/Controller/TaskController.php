@@ -178,6 +178,8 @@ final class TaskController extends AbstractController
         $this->entityManager->persist($task);
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('app_main');
+        // Redirect to the project view containing the task
+        $project = $state->getProject();
+        return $this->redirectToRoute('app_project_show', ['id' => $project->getId()]);
     }
 }

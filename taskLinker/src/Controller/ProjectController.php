@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Project;
 use App\Entity\EmployeeAssignement;
 use App\Entity\State;
+use App\Service\ProjectService;
 use App\Repository\ProjectRepository;
 use App\Repository\StateRepository;
 use App\Service\UserService;
@@ -20,7 +21,8 @@ final class ProjectController extends AbstractController
     public function __construct(
         private ProjectRepository $projectRepository,
         private UserService $userService,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private ProjectService $projectService
     ) {}
 
     #[Route('/create', name: 'app_project_create', methods: ['GET'])]
@@ -36,41 +38,13 @@ final class ProjectController extends AbstractController
     public function create(
         Request $request
     ): Response {
-        $project = new Project();
-        $project->setLabel($request->request->get('label'));
-
-        $this->entityManager->persist($project);
-        $this->entityManager->flush();
-
-        // Creer 3 states en dur
-        $defaultStates = ['À faire', 'En cours', 'Fait'];
-        foreach ($defaultStates as $stateLabel) {
-            $state = new State();
-            $state->setLabel($stateLabel);
-            $state->setProject($project);
-            $this->entityManager->persist($state);
-        }
-        $this->entityManager->flush();
-
-        // Handle employee assignments
+        $label = (string) $request->request->get('label');
         $employeeIds = $request->request->all('employees');
-        if (!empty($employeeIds)) {
-            foreach ($employeeIds as $employeeId) {
-                $employee = $this->userService->getUserById($employeeId);
-                if ($employee) {
-                    $assignment = new EmployeeAssignement();
-                    $assignment->setProject($project);
-                    $assignment->setEmployee($employee);
-                    $this->entityManager->persist($assignment);
-                }
-            }
-            $this->entityManager->flush();
-        }
 
-
+        $project = $this->projectService->createProject($label, $employeeIds);
 
         $this->addFlash('success', 'Project created successfully');
-        return $this->redirectToRoute('app_project_edit_get', ['id' => $project->getId()]);
+        return $this->redirectToRoute('app_project_list');
     }
 
     #[Route('/list', name: 'app_project_list', methods: ['GET'])]
