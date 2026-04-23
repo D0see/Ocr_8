@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
 
+
+html, body {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none;     /* anciens IE/Edge */
+  user-select: none;
+}
+
 button.delete-team {
     color: #E14343;
     font-size: 14px;
@@ -250,6 +257,7 @@ div#projects-container {
     letter-spacing: 0em;
     text-align: center;
     text-decoration: none;
+    cursor: pointer;
 }
 
 div#tasks-container {
